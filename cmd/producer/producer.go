@@ -12,7 +12,7 @@ import (
 
 const (
 	KafkaServerAddress = "localhost:9092"
-	KafkaTopic         = "notifications"
+	KafkaTopic         = "bankaccount"
 )
 
 func setupProducer() (sarama.SyncProducer, error) {
@@ -26,9 +26,9 @@ func setupProducer() (sarama.SyncProducer, error) {
 	return producer, nil
 }
 
-func sendKafkaMessage(producer sarama.SyncProducer, message []byte) error {
+func sendKafkaMessage(producer sarama.SyncProducer, topic string, message []byte) error {
 	msg := &sarama.ProducerMessage{
-		Topic: KafkaTopic,
+		Topic: topic,
 		Value: sarama.ByteEncoder(message),
 	}
 	_, _, err := producer.SendMessage(msg)
@@ -41,7 +41,7 @@ func main() {
 		log.Fatalf("Failed to setup producer: %v", err.Error())
 	}
 	defer p.Close()
-	////Get size arguments from command line if provided
+	//Get size arguments from command line if provided
 	size := 1
 	if len(os.Args) > 1 {
 		size, err = strconv.Atoi(os.Args[1])
@@ -62,6 +62,9 @@ func main() {
 			fmt.Printf("Failed to marshal bank account: %v", err.Error())
 		}
 		//Send the message
-		err = sendKafkaMessage(p, data)
+		err = sendKafkaMessage(p, KafkaTopic, data)
+		if err != nil {
+			fmt.Printf("Failed to send message: %v", err.Error())
+		}
 	}
 }

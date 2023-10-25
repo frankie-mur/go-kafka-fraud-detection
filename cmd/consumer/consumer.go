@@ -13,7 +13,7 @@ import (
 
 const (
 	KafkaServerAddress = "localhost:9092"
-	KafkaTopic         = "notifications"
+	KafkaTopic         = "bankaccount"
 )
 
 func connectConsumer() (sarama.Consumer, error) {
@@ -48,10 +48,10 @@ func handleMessage(msg *sarama.ConsumerMessage) error {
 	return nil
 }
 
+// Simulate calling an actual verification service
+// randomly return true or false
 func callVeritas(bankAccount models.BankAccount) bool {
 	fmt.Printf("Calling Veritas for %s bank...\n", bankAccount.FirstName)
-	//Simulate calling an actual verification service
-	//Here we just randomly return true or false
 	return rand.Intn(2) == 0
 }
 
